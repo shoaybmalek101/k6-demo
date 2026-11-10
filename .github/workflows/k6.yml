@@ -15,9 +15,7 @@ jobs:
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
 
-      - name: Run k6 cloud test
+      - name: Run k6 bottleneck test
         uses: grafana/k6-action@v0.3.1
         with:
-          filename: ${{ github.workspace }}/k6cloud-test.js
-        env:
-          BASE_URL: https://jsonplaceholder.typicode.com
+          filename: ${{ github.workspace }}/bottleneck-demo.js
