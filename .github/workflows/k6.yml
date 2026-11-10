@@ -9,13 +9,27 @@ on:
 jobs:
   k6:
     runs-on: ubuntu-latest
+    environment: Staging
+
     steps:
       - uses: actions/checkout@v4.2.2
 
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
 
-      - name: Run k6 bottleneck test
-        uses: grafana/k6-action@v0.3.1
-        with:
-          filename: ${{ github.workspace }}/bottleneck-demo.js
+      - name: Log in to Grafana Cloud k6
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+          K6_CLOUD_STACK: ${{ vars.K6_CLOUD_STACK_SLUG }}
+        run: >
+          k6 cloud login
+          --token "$K6_CLOUD_TOKEN"
+          --stack "$K6_CLOUD_STACK"
+
+      - name: Run k6 test and send results to Grafana Cloud
+        run: >
+          k6 cloud run
+          --local-execution
+          --env BASE_URL="${{ vars.BASE_URL }}"
+          ./k6cloud-test.js
+         
